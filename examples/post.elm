@@ -1,3 +1,5 @@
+module Main exposing (..)
+
 import Html.App exposing (map)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -6,31 +8,33 @@ import Platform.Cmd exposing (none)
 import Platform.Sub
 import String
 import Json.Decode exposing (Decoder)
-
 import DOM exposing (..)
 
 
-type alias Model = 
+type alias Model =
   List Float
 
 
-model : Model 
-model = 
+model : Model
+model =
   []
 
 
-type Msg 
+type Msg
   = Measure (List Float)
 
 
-init : (Model, Cmd Msg)
-init = ([], none)
+init : ( Model, Cmd Msg )
+init =
+  ( [], none )
 
 
-update : Msg -> Model -> (Model, Cmd Msg)
-update action model = 
+update : Msg -> Model -> ( Model, Cmd Msg )
+update action model =
   case action of
-    Measure measures -> (measures, none)
+    Measure measures ->
+      ( measures, none )
+
 
 
 -- VIEW
@@ -38,52 +42,72 @@ update action model =
 
 infixr 5 :>
 (:>) : (a -> b) -> a -> b
-(:>) f x = 
+(:>) f x =
   f x
 
 
 decode : Decoder (List Float)
-decode = 
-  DOM.target                    -- (a)
-  :> parentElement              -- (b)
-  :> childNode 0                -- (c)
-  :> childNode 0                -- (d)
-  :> childNodes                 -- (e)
-       DOM.offsetWidth          -- read the width of each element
+decode =
+  DOM.target
+    -- (a)
+    :>
+      parentElement
+    -- (b)
+    :>
+      childNode 0
+    -- (c)
+    :>
+      childNode 0
+    -- (d)
+    :>
+      childNodes
+        -- (e)
+        DOM.offsetWidth
+
+
+
+-- read the width of each element
 
 
 css : Attribute a
-css = 
-  style [ ("padding", "1em") ]
+css =
+  style [ ( "padding", "1em" ) ]
 
 
 view : Model -> Html Msg
-view model = 
-  div -- parentElement (b)
+view model =
+  div
+    -- parentElement (b)
     []
-    [ div -- childNode 0 (c)
-        [ css ]
-        [ div -- childNode 0 (d)
-            []
-            [ span [ css ] [ text "short" ] 
-            , span [ css ] [ text "somewhat long" ] 
-            , span [ css ] [ text "longer than the others" ]
-            ] -- childNodes (e)
+    [ div
+      -- childNode 0 (c)
+      [ css ]
+      [ div
+        -- childNode 0 (d)
+        []
+        [ span [ css ] [ text "short" ]
+        , span [ css ] [ text "somewhat long" ]
+        , span [ css ] [ text "longer than the others" ]
         ]
-    , map Measure <| button -- target (a)
+        -- childNodes (e)
+      ]
+    , map Measure <|
+      button
+        -- target (a)
         [ css
-        , on "click" decode 
+        , on "click" decode
         ]
         [ text "Measure!" ]
-    , div 
-        [ css ]
-        [ model 
-          |> List.map toString
-          |> String.join ", "
-          |> text 
-        , text "!"
-        ]
+    , div
+      [ css ]
+      [ model
+        |> List.map toString
+        |> String.join ", "
+        |> text
+      , text "!"
+      ]
     ]
+
 
 
 -- STARTAPP
@@ -91,11 +115,9 @@ view model =
 
 main : Program Never
 main =
-  Html.App.program 
-    { init = ( model, none ) 
+  Html.App.program
+    { init = ( model, none )
     , view = view
     , subscriptions = always Sub.none
     , update = update
     }
-
-
