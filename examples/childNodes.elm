@@ -1,7 +1,6 @@
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Html.App exposing (map)
 import Platform.Cmd exposing (none)
 import Platform.Sub
 import Json.Decode as Decode exposing (Decoder)
@@ -32,7 +31,7 @@ update msg model =
 
 items : Html a
 items =
-  [0..5]
+  List.range 0 5
   |> List.map (\idx ->
     li
       -- elm-dom will later extract the class names directly from the DOM out of
@@ -69,7 +68,7 @@ view model =
     , div
         [ class "value" ]
         [ text <| "Model value: " ++ toString model ]
-    , map Measure <| button -- target
+    , Html.map Measure <| button -- target
         [ class "button"
         , on "click" decode  
         ]
@@ -77,9 +76,9 @@ view model =
     ]
 
 
-main : Program Never
+main : Program Never Model Msg
 main = 
-  Html.App.program 
+  Html.program 
     { init = ( model0, none )
     , update = update
     , subscriptions = always Sub.none
