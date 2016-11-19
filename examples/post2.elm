@@ -1,4 +1,3 @@
-import Html.App exposing (map)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -81,7 +80,7 @@ view model =
             , span [ css ] [ text "much longer than the others" ]
             ] -- childNodes (e)
         ]
-    , map Measure <| button -- target (a)
+    , Html.map Measure <| button -- target (a)
         [ css
         , on "click" Json.value 
         ]
@@ -106,9 +105,9 @@ view model =
 -- APP
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
-  Html.App.program
+  Html.program
     { init = ( model, none )
     , subscriptions = always Sub.none
     , update = update
