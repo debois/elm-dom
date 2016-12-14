@@ -1,3 +1,5 @@
+module Main exposing (..)
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -6,12 +8,11 @@ import Platform.Cmd exposing (none)
 import Platform.Sub
 import Json.Decode as Decode exposing (Decoder)
 import String
-
 import DOM exposing (..)
 
 
-type alias Model
-  = String
+type alias Model =
+  String
 
 
 model0 : Model
@@ -19,28 +20,35 @@ model0 =
   "(Nothing)"
 
 
-type Msg = 
-  Measure String
+type Msg
+  = Measure String
 
 
-update : Msg -> Model -> (Model, Cmd Msg)
-update msg model = 
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
   case msg of
-    Measure str -> 
-      (str, none)
+    Measure str ->
+      ( str, none )
 
 
 items : Html a
 items =
-  [0..5]
-  |> List.map (\idx ->
-    li
-      -- elm-dom will later extract the class names directly from the DOM out of
-      -- the elements.
-      [ class <| "class-" ++ (toString idx) ]
-      [ text <| "Item " ++ toString idx ]
-  ) -- childNodes
-  |> ul [] --childNode 0 (b)
+  List.range 0 5
+    |> List.map
+      (\idx ->
+        li
+          -- elm-dom will later extract the class names directly from the DOM out of
+          -- the elements.
+          [ class <| "class-" ++ (toString idx) ]
+          [ text <| "Item " ++ toString idx ]
+      )
+    -- childNodes
+    |>
+      ul []
+
+
+
+--childNode 0 (b)
 
 
 infixr 5 :>
@@ -52,34 +60,45 @@ infixr 5 :>
 decode : Decoder String
 decode =
   DOM.target
-  :> parentElement
-  :> childNode 0 -- (a)
-  :> childNode 0 -- (b)
-  :> childNodes className -- Extract the class name from the elements
-  |> Decode.map (String.join ", ")
+    :> parentElement
+    :> childNode 0
+    -- (a)
+    :>
+      childNode 0
+    -- (b)
+    :>
+      childNodes className
+    -- Extract the class name from the elements
+    |>
+      Decode.map (String.join ", ")
 
 
 view : Model -> Html Msg
 view model =
-  div -- parentElement
+  div
+    -- parentElement
     [ class "root" ]
-    [ div -- childNode 0 (a)
-        [ class "container"]
-        [ items ] -- See childNode 0 (b) in the above "items" function
+    [ div
+      -- childNode 0 (a)
+      [ class "container" ]
+      [ items ]
+      -- See childNode 0 (b) in the above "items" function
     , div
-        [ class "value" ]
-        [ text <| "Model value: " ++ toString model ]
-    , map Measure <| button -- target
+      [ class "value" ]
+      [ text <| "Model value: " ++ toString model ]
+    , map Measure <|
+      button
+        -- target
         [ class "button"
-        , on "click" decode  
+        , on "click" decode
         ]
         [ text "Click" ]
     ]
 
 
 main : Program Never
-main = 
-  Html.App.program 
+main =
+  Html.App.program
     { init = ( model0, none )
     , update = update
     , subscriptions = always Sub.none
