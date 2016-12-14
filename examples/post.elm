@@ -1,6 +1,5 @@
 module Main exposing (..)
 
-import Html.App exposing (map)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -91,7 +90,7 @@ view model =
         ]
         -- childNodes (e)
       ]
-    , map Measure <|
+    , Html.map Measure <|
       button
         -- target (a)
         [ css
@@ -113,9 +112,9 @@ view model =
 -- STARTAPP
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
-  Html.App.program
+  Html.program
     { init = ( model, none )
     , view = view
     , subscriptions = always Sub.none

@@ -3,7 +3,6 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Html.App exposing (map)
 import Platform.Cmd exposing (none)
 import Platform.Sub
 import Json.Decode as Decode exposing (Decoder)
@@ -86,7 +85,7 @@ view model =
     , div
       [ class "value" ]
       [ text <| "Model value: " ++ toString model ]
-    , map Measure <|
+    , Html.map Measure <|
       button
         -- target
         [ class "button"
@@ -96,9 +95,9 @@ view model =
     ]
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
-  Html.App.program
+  Html.program
     { init = ( model0, none )
     , update = update
     , subscriptions = always Sub.none
