@@ -143,7 +143,15 @@ offsetHeight =
 
 
 {-| Get the left-offset of the element in the parent element in pixels.
-Underlying implementation reads `.offsetLeft`.
+Underlying implementation reads `.offsetLeft`. Needs to be coupled with `target` decoder like so:
+
+div 
+  [ on "click" (Json.map YourMsg (DOM.target DOM.offsetLeft))
+  ] 
+  []
+  
+type Msg = YourMsg Float
+
 -}
 offsetLeft : Decoder Float
 offsetLeft =
