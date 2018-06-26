@@ -1,30 +1,34 @@
 module DOM
-  exposing
-    ( target
-    , offsetParent
-    , parentElement
-    , nextSibling
-    , previousSibling
-    , childNode
-    , childNodes
-    , offsetWidth
-    , offsetHeight
-    , offsetLeft
-    , offsetTop
-    , scrollLeft
-    , scrollTop
-    , Rectangle
-    , boundingClientRect
-    , className
-    )
+    exposing
+        ( Rectangle
+        , boundingClientRect
+        , childNode
+        , childNodes
+        , className
+        , nextSibling
+        , offsetHeight
+        , offsetLeft
+        , offsetParent
+        , offsetTop
+        , offsetWidth
+        , parentElement
+        , previousSibling
+        , scrollLeft
+        , scrollTop
+        , target
+        )
 
 {-| You read values off the DOM by constructing a JSON decoder.
 See the `target` value for example use.
 
+
 # Traversing the DOM
+
 @docs target, offsetParent, parentElement, nextSibling, previousSibling, childNode, childNodes
 
+
 # Geometry
+
 Decoders for reading sizing etc. properties off the DOM. All decoders return
 measurements in pixels.
 
@@ -37,31 +41,37 @@ for the precise semantics of these measurements. See also
 @docs offsetLeft, offsetTop
 @docs Rectangle, boundingClientRect
 
+
 # Scroll
+
 @docs scrollLeft, scrollTop
 
+
 # Miscellanous
+
 @docs className
+
 -}
 
-import Json.Decode as Decode exposing (field, at, andThen, Decoder)
+import Json.Decode as Decode exposing (Decoder, andThen, at, field)
 
 
 {-| Get the target DOM element of an event. You will usually start with this
 decoder. E.g., to make a button which when clicked emit an Action that carries
 the width of the button:
 
-  import DOM exposing (target, offsetWidth)
+    import DOM exposing (offsetWidth, target)
 
-  myButton : Html Float
-  myButton =
-    button
-    [ on "click" (target offsetWidth) ]
-    [ text "Click me!" ]
+    myButton : Html Float
+    myButton =
+        button
+            [ on "click" (target offsetWidth) ]
+            [ text "Click me!" ]
+
 -}
 target : Decoder a -> Decoder a
 target decoder =
-  field "target" decoder
+    field "target" decoder
 
 
 {-| Get the offsetParent of the current element. Returns first argument if the current
@@ -69,57 +79,58 @@ element is already the root; applies the second argument to the parent element
 if not.
 
 To do traversals of the DOM, exploit that Elm allows recursive values.
+
 -}
 offsetParent : a -> Decoder a -> Decoder a
 offsetParent x decoder =
-  Decode.oneOf
-    [ field "offsetParent" <| Decode.null x
-    , field "offsetParent" decoder
-    ]
+    Decode.oneOf
+        [ field "offsetParent" <| Decode.null x
+        , field "offsetParent" decoder
+        ]
 
 
 {-| Get the next sibling of an element.
 -}
 nextSibling : Decoder a -> Decoder a
 nextSibling decoder =
-  field "nextSibling" decoder
+    field "nextSibling" decoder
 
 
 {-| Get the previous sibling of an element.
 -}
 previousSibling : Decoder a -> Decoder a
 previousSibling decoder =
-  field "previousSibling" decoder
+    field "previousSibling" decoder
 
 
 {-| Get the parent of an element.
 -}
 parentElement : Decoder a -> Decoder a
 parentElement decoder =
-  field "parentElement" decoder
+    field "parentElement" decoder
 
 
 {-| Find the ith child of an element.
 -}
 childNode : Int -> Decoder a -> Decoder a
 childNode idx =
-  at [ "childNodes", toString idx ]
+    at [ "childNodes", toString idx ]
 
 
 {-| Get the children of an element.
 -}
 childNodes : Decoder a -> Decoder (List a)
 childNodes decoder =
-  let
-    loop idx xs =
-      Decode.maybe (field (toString idx) decoder)
-        |> andThen
-          (Maybe.map (\x -> loop (idx + 1) (x :: xs))
-            >> Maybe.withDefault (Decode.succeed xs)
-          )
-  in
+    let
+        loop idx xs =
+            Decode.maybe (field (toString idx) decoder)
+                |> andThen
+                    (Maybe.map (\x -> loop (idx + 1) (x :: xs))
+                        >> Maybe.withDefault (Decode.succeed xs)
+                    )
+    in
     (field "childNodes" <| loop 0 [])
-      |> Decode.map List.reverse
+        |> Decode.map List.reverse
 
 
 
@@ -131,7 +142,7 @@ reads `.offsetWidth`.
 -}
 offsetWidth : Decoder Float
 offsetWidth =
-  field "offsetWidth" Decode.float
+    field "offsetWidth" Decode.float
 
 
 {-| Get the heigh of an element in pixels. Underlying implementation
@@ -139,7 +150,7 @@ reads `.offsetHeight`.
 -}
 offsetHeight : Decoder Float
 offsetHeight =
-  field "offsetHeight" Decode.float
+    field "offsetHeight" Decode.float
 
 
 {-| Get the left-offset of the element in the parent element in pixels.
@@ -147,7 +158,7 @@ Underlying implementation reads `.offsetLeft`.
 -}
 offsetLeft : Decoder Float
 offsetLeft =
-  field "offsetLeft" Decode.float
+    field "offsetLeft" Decode.float
 
 
 {-| Get the top-offset of the element in the parent element in pixels.
@@ -155,7 +166,7 @@ Underlying implementation reads `.offsetTop`.
 -}
 offsetTop : Decoder Float
 offsetTop =
-  field "offsetTop" Decode.float
+    field "offsetTop" Decode.float
 
 
 {-| Get the amount of left scroll of the element in pixels.
@@ -163,7 +174,7 @@ Underlying implementation reads `.scrollLeft`.
 -}
 scrollLeft : Decoder Float
 scrollLeft =
-  field "scrollLeft" Decode.float
+    field "scrollLeft" Decode.float
 
 
 {-| Get the amount of top scroll of the element in pixels.
@@ -171,17 +182,17 @@ Underlying implementation reads `.scrollTop`.
 -}
 scrollTop : Decoder Float
 scrollTop =
-  field "scrollTop" Decode.float
+    field "scrollTop" Decode.float
 
 
 {-| Types for rectangles.
 -}
 type alias Rectangle =
-  { top : Float
-  , left : Float
-  , width : Float
-  , height : Float
-  }
+    { top : Float
+    , left : Float
+    , width : Float
+    , height : Float
+    }
 
 
 {-| Approximation of the method
@@ -201,21 +212,22 @@ ways.
 native or using ports; my packages don't get to go native and I can find no
 solution with ports. So we do it like in the bad old days with an O(lg n)
 traversal of the DOM, browser-dependencies and CSS quirks, only now through
-presumably expensive JSON decoders.  It's 2007 forever, baby!)
+presumably expensive JSON decoders. It's 2007 forever, baby!)
+
 -}
 boundingClientRect : Decoder Rectangle
 boundingClientRect =
-  Decode.map3
-    (\( x, y ) width height ->
-      { top = y
-      , left = x
-      , width = width
-      , height = height
-      }
-    )
-    (position 0 0)
-    offsetWidth
-    offsetHeight
+    Decode.map3
+        (\( x, y ) width height ->
+            { top = y
+            , left = x
+            , width = width
+            , height = height
+            }
+        )
+        (position 0 0)
+        offsetWidth
+        offsetHeight
 
 
 
@@ -237,18 +249,18 @@ boundingClientRect =
 
 position : Float -> Float -> Decoder ( Float, Float )
 position x y =
-  Decode.map4
-    (\scrollLeft scrollTop offsetLeft offsetTop ->
-      ( x + offsetLeft - scrollLeft, y + offsetTop - scrollTop )
-    )
-    scrollLeft
-    scrollTop
-    offsetLeft
-    offsetTop
-    |> andThen
-      (\( x_, y_ ) ->
-        offsetParent ( x_, y_ ) (position x_ y_)
-      )
+    Decode.map4
+        (\scrollLeft scrollTop offsetLeft offsetTop ->
+            ( x + offsetLeft - scrollLeft, y + offsetTop - scrollTop )
+        )
+        scrollLeft
+        scrollTop
+        offsetLeft
+        offsetTop
+        |> andThen
+            (\( x_, y_ ) ->
+                offsetParent ( x_, y_ ) (position x_ y_)
+            )
 
 
 
@@ -259,4 +271,4 @@ position x y =
 -}
 className : Decoder String
 className =
-  at [ "className" ] Decode.string
+    at [ "className" ] Decode.string
