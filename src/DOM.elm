@@ -5,6 +5,7 @@ module DOM
         , childNode
         , childNodes
         , className
+        , currentTarget
         , nextSibling
         , offsetHeight
         , offsetLeft
@@ -24,7 +25,7 @@ See the `target` value for example use.
 
 # Traversing the DOM
 
-@docs target, offsetParent, parentElement, nextSibling, previousSibling, childNode, childNodes
+@docs target, currentTarget, offsetParent, parentElement, nextSibling, previousSibling, childNode, childNodes
 
 
 # Geometry
@@ -72,6 +73,13 @@ the width of the button:
 target : Decoder a -> Decoder a
 target decoder =
     field "target" decoder
+
+
+{-| Get the currentTarget DOM element of an event.
+-}
+currentTarget : Decoder a -> Decoder a
+currentTarget decoder =
+    field "currentTarget" decoder
 
 
 {-| Get the offsetParent of the current element. Returns first argument if the current
