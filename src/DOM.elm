@@ -122,7 +122,7 @@ parentElement decoder =
 -}
 childNode : Int -> Decoder a -> Decoder a
 childNode idx =
-    at [ "childNodes", toString idx ]
+    at [ "childNodes", String.fromInt idx ]
 
 
 {-| Get the children of an element.
@@ -131,7 +131,7 @@ childNodes : Decoder a -> Decoder (List a)
 childNodes decoder =
     let
         loop idx xs =
-            Decode.maybe (field (toString idx) decoder)
+            Decode.maybe (field (String.fromInt idx) decoder)
                 |> andThen
                     (Maybe.map (\x -> loop (idx + 1) (x :: xs))
                         >> Maybe.withDefault (Decode.succeed xs)
@@ -258,8 +258,8 @@ boundingClientRect =
 position : Float -> Float -> Decoder ( Float, Float )
 position x y =
     Decode.map4
-        (\scrollLeft scrollTop offsetLeft offsetTop ->
-            ( x + offsetLeft - scrollLeft, y + offsetTop - scrollTop )
+        (\scrollLeftP scrollTopP offsetLeftP offsetTopP ->
+            ( x + offsetLeftP - scrollLeftP, y + offsetTopP - scrollTopP )
         )
         scrollLeft
         scrollTop

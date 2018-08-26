@@ -8,6 +8,7 @@ import Platform.Sub
 import Json.Decode as Decode exposing (Decoder)
 import String
 import DOM exposing (..)
+import Browser
 
 
 type alias Model =
@@ -21,6 +22,11 @@ model0 =
 
 type Msg
   = Measure String
+
+
+init : () -> ( Model, Cmd Msg )
+init _ =
+  ( "", none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -38,8 +44,8 @@ items =
         li
           -- elm-dom will later extract the class names directly from the DOM out of
           -- the elements.
-          [ class <| "class-" ++ (toString idx) ]
-          [ text <| "Item " ++ toString idx ]
+          [ class <| "class-" ++ (String.fromInt idx) ]
+          [ text <| "Item " ++ String.fromInt idx ]
       )
     -- childNodes
     |>
@@ -50,30 +56,24 @@ items =
 --childNode 0 (b)
 
 
-infixr 5 :>
-(:>) : (a -> b) -> a -> b
-(:>) f x =
-  f x
-
-
 decode : Decoder String
 decode =
-  DOM.target
-    :> parentElement
-    :> childNode 0
+  (DOM.target
+    <| parentElement
+    <| childNode 0
     -- (a)
-    :>
+    <|
       childNode 0
     -- (b)
-    :>
-      childNodes className
+    <|
+      childNodes className)
     -- Extract the class name from the elements
     |>
       Decode.map (String.join ", ")
 
 
 view : Model -> Html Msg
-view model =
+view model_ =
   div
     -- parentElement
     [ class "root" ]
@@ -84,7 +84,7 @@ view model =
       -- See childNode 0 (b) in the above "items" function
     , div
       [ class "value" ]
-      [ text <| "Model value: " ++ toString model ]
+      [ text <| "Model value: " ++ modelToString model_ ]
     , Html.map Measure <|
       button
         -- target
@@ -94,11 +94,12 @@ view model =
         [ text "Click" ]
     ]
 
+modelToString _ = ""
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-  Html.program
-    { init = ( model0, none )
+  Browser.element
+    { init = init
     , update = update
     , subscriptions = always Sub.none
     , view = view
