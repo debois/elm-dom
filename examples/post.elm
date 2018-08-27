@@ -8,6 +8,7 @@ import Platform.Sub
 import String
 import Json.Decode exposing (Decoder)
 import DOM exposing (..)
+import Browser
 
 
 type alias Model =
@@ -23,13 +24,13 @@ type Msg
   = Measure (List Float)
 
 
-init : ( Model, Cmd Msg )
-init =
+init : () -> ( Model, Cmd Msg )
+init _ =
   ( [], none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update action model =
+update action _ =
   case action of
     Measure measures ->
       ( measures, none )
@@ -39,27 +40,18 @@ update action model =
 -- VIEW
 
 
-infixr 5 :>
-(:>) : (a -> b) -> a -> b
-(:>) f x =
-  f x
-
 
 decode : Decoder (List Float)
 decode =
   DOM.target
     -- (a)
-    :>
-      parentElement
+      <| parentElement
     -- (b)
-    :>
-      childNode 0
+      <| childNode 0
     -- (c)
-    :>
-      childNode 0
+      <| childNode 0
     -- (d)
-    :>
-      childNodes
+      <| childNodes
         -- (e)
         DOM.offsetWidth
 
@@ -70,11 +62,11 @@ decode =
 
 css : Attribute a
 css =
-  style [ ( "padding", "1em" ) ]
+  style "padding" "1em"
 
 
 view : Model -> Html Msg
-view model =
+view model_ =
   div
     -- parentElement (b)
     []
@@ -99,23 +91,25 @@ view model =
         [ text "Measure!" ]
     , div
       [ css ]
-      [ model
-        |> List.map toString
+      [ model_
+        |> List.map modelToString
         |> String.join ", "
         |> text
       , text "!"
       ]
     ]
 
+modelToString model_ =
+    ""
 
 
 -- STARTAPP
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-  Html.program
-    { init = ( model, none )
+  Browser.element
+    { init = init
     , view = view
     , subscriptions = always Sub.none
     , update = update

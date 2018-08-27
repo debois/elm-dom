@@ -8,6 +8,7 @@ import Platform.Sub
 import String
 import Json.Decode as Json exposing (Decoder)
 import DOM exposing (..)
+import Browser
 
 
 type alias Model =
@@ -24,13 +25,13 @@ type Msg
   | NoOp
 
 
-init : ( Model, Cmd Msg )
-init =
+init : () -> ( Model, Cmd Msg )
+init _ =
   ( always [], none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update action model =
+update action model_ =
   case action of
     Measure val ->
       ( (\_ ->
@@ -49,26 +50,21 @@ update action model =
 -- VIEW
 
 
-infixr 5 :>
-(:>) : (a -> b) -> a -> b
-(:>) f x =
-  f x
-
 
 decode : Decoder (List Float)
 decode =
   DOM.target
     -- (a)
-    :>
+    <|
       parentElement
     -- (b)
-    :>
+    <|
       childNode 0
     -- (c)
-    :>
+    <|
       childNode 0
     -- (d)
-    :>
+    <|
       childNodes
         -- (e)
         DOM.offsetHeight
@@ -80,11 +76,11 @@ decode =
 
 css : Attribute a
 css =
-  style [ ( "padding", "1em" ) ]
+  style "padding" "1em"
 
 
 view : Model -> Html Msg
-view model =
+view model_ =
   div
     -- parentElement (b)
     []
@@ -116,23 +112,25 @@ view model =
       ]
     , div
       [ css ]
-      [ model ()
-        |> List.map toString
+      [ model_ ()
+        |> List.map modelToString
         |> String.join ", "
         |> text
       , text "!"
       ]
     ]
 
+modelToString _ =
+    ""
 
 
 -- APP
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-  Html.program
-    { init = ( model, none )
+  Browser.element
+    { init = init
     , subscriptions = always Sub.none
     , update = update
     , view = view
