@@ -4,7 +4,9 @@ module DOM
         , boundingClientRect
         , childNode
         , childNodes
+        , tagName
         , className
+        , classList
         , currentTarget
         , nextSibling
         , offsetHeight
@@ -13,10 +15,12 @@ module DOM
         , offsetTop
         , offsetWidth
         , parentElement
+        , findAncestor
         , previousSibling
         , scrollLeft
         , scrollTop
         , target
+        , hasClass
         )
 
 {-| You read values off the DOM by constructing a JSON decoder.
@@ -25,7 +29,7 @@ See the `target` value for example use.
 
 # Traversing the DOM
 
-@docs target, currentTarget, offsetParent, parentElement, nextSibling, previousSibling, childNode, childNodes
+@docs target, currentTarget, offsetParent, parentElement, findAncestor, nextSibling, previousSibling, childNode, childNodes
 
 
 # Geometry
@@ -47,15 +51,19 @@ for the precise semantics of these measurements. See also
 
 @docs scrollLeft, scrollTop
 
+# Predicates
+
+@docs hasClass
 
 # Miscellanous
 
-@docs className
+@docs tagName
+@docs className, classList
 
 -}
 
 import Json.Decode as Decode exposing (Decoder, andThen, at, field)
-
+import Dict
 
 {-| Get the target DOM element of an event. You will usually start with this
 decoder. E.g., to make a button which when clicked emit an Action that carries
@@ -117,6 +125,21 @@ parentElement : Decoder a -> Decoder a
 parentElement decoder =
     field "parentElement" decoder
 
+{-| Get the closest ancestor of an element that satisfies the provided predicate.
+-}
+findAncestor : Decoder Bool -> Decoder a -> Decoder (Maybe a)
+findAncestor predicate decoder = (findElement predicate decoder) |> parentElement
+
+findElement : Decoder Bool -> Decoder a -> Decoder (Maybe a)
+findElement predicate decoder = Decode.oneOf
+  [ Decode.null Nothing
+  , Decode.andThen (\b ->
+        case b of
+          True -> Decode.map Just decoder
+          False -> findAncestor predicate decoder
+      )
+      predicate
+  ]
 
 {-| Find the ith child of an element.
 -}
@@ -272,11 +295,31 @@ position x y =
 
 
 
+-- PREDICATES
+
+{-| Checks if an element has a given class.
+-}
+hasClass : String -> Decoder Bool
+hasClass cName = classList |> Decode.map (List.member cName)
+
 -- MISC
 
+{-| Get the tag name of an element.
+-}
+tagName : Decoder String
+tagName =
+    at [ "tagName" ] Decode.string
 
 {-| Get the class name(s) of an element.
 -}
 className : Decoder String
 className =
     at [ "className" ] Decode.string
+
+{-| Get the class list of an element.
+    typeof classList is object, so we can not call Decode.list
+-}
+classList : Decoder (List String)
+classList =
+    at [ "classList" ]
+      ( Decode.dict Decode.string |> Decode.map Dict.values )
