@@ -5,6 +5,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout
+      uses: actions/checkout@v2
     - uses: jorelali/setup-elm@v2
       with:
         elm-version: 0.19.1
@@ -12,4 +14,6 @@ jobs:
       with:
         node-version: '10.x'
     - run: npm install -g elm-test
+    - run: elm make
+    - run: elm make --docs=docs.json
     - run: elm-test
