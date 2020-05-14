@@ -24,6 +24,7 @@ module DOM
         , isTag
         , and
         , or
+        , negate
         , textContent
         )
 
@@ -58,7 +59,7 @@ for the precise semantics of these measurements. See also
 # Predicates
 
 @docs hasClass, isTag
-@docs and, or
+@docs and, or, negate
 
 # Miscellanous
 
@@ -70,6 +71,8 @@ for the precise semantics of these measurements. See also
 
 import Json.Decode as Decode exposing (Decoder, andThen, at, field)
 import Dict
+
+-- TRAVERSING
 
 {-| Get the target DOM element of an event. You will usually start with this
 decoder. E.g., to make a button which when clicked emit an Action that carries
@@ -207,6 +210,8 @@ offsetTop =
     field "offsetTop" Decode.float
 
 
+-- SCROLL
+
 {-| Get the amount of left scroll of the element in pixels.
 Underlying implementation reads `.scrollLeft`.
 -}
@@ -323,6 +328,11 @@ and = Decode.map2 (&&)
 -}
 or : Decoder Bool -> Decoder Bool -> Decoder Bool
 or = Decode.map2 (||)
+
+{-| Inverses a predicate
+-}
+negate : Decoder Bool -> Decoder Bool
+negate = Decode.map not
 
 -- MISC
 
