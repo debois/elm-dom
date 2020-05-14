@@ -128,15 +128,16 @@ parentElement decoder =
 {-| Get the closest ancestor of an element that satisfies the provided predicate.
 -}
 findAncestor : Decoder Bool -> Decoder a -> Decoder (Maybe a)
-findAncestor predicate decoder = (findElement predicate decoder) |> parentElement
+findAncestor predicate decoder = findElement predicate decoder |> parentElement
 
 findElement : Decoder Bool -> Decoder a -> Decoder (Maybe a)
 findElement predicate decoder = Decode.oneOf
   [ Decode.null Nothing
   , Decode.andThen (\b ->
-        case b of
-          True -> Decode.map Just decoder
-          False -> findAncestor predicate decoder
+        if b then
+          Decode.map Just decoder
+        else
+          findAncestor predicate decoder
       )
       predicate
   ]
