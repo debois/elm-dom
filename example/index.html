@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>Main</title>
+  <script src="main.js"></script>
+  <style>
+  .log-block, .example-block {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 5px;
+    border: 1px solid gray;
+  }
+  </style>
+</head>
+<body>
+  <div id="main"></div>
+  <script>
+    var app = Elm.Main.init({
+      node: document.getElementById('main'),
+      flags: {}
+    });
+
+    setTimeout(function(){
+      app.ports.messageReceiver.send(document.body);
+    },2000);
+  </script>
+</body>
+</html>
