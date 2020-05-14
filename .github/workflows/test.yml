@@ -1,0 +1,15 @@
+name: "test"
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: jorelali/setup-elm@v2
+      with:
+        elm-version: 0.19.1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - run: npm install -g elm-test
+    - run: elm-test
