@@ -1,7 +1,7 @@
 {
     "type": "package",
     "name": "debois/elm-dom",
-    "summary": "DOM traversal for Elm event-handlers",
+    "summary": "DOM traversal for Elm event-handlers and ports",
     "license": "Apache-2.0",
     "version": "1.3.0",
     "exposed-modules": [
