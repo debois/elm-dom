@@ -21,6 +21,9 @@ module DOM
         , scrollTop
         , target
         , hasClass
+        , isTag
+        , and
+        , or
         )
 
 {-| You read values off the DOM by constructing a JSON decoder.
@@ -53,7 +56,8 @@ for the precise semantics of these measurements. See also
 
 # Predicates
 
-@docs hasClass
+@docs hasClass, isTag
+@docs and, or
 
 # Miscellanous
 
@@ -302,6 +306,21 @@ position x y =
 -}
 hasClass : String -> Decoder Bool
 hasClass cName = classList |> Decode.map (List.member cName)
+
+{-| Compares the tag name of an element to the parameter. The tName parameter has to be uppercased
+-}
+isTag : String -> Decoder Bool
+isTag tName = tagName |> Decode.map ( (==) tName )
+
+{-| Joins two predicates with an and operator
+-}
+and : Decoder Bool -> Decoder Bool -> Decoder Bool
+and = Decode.map2 (&&)
+
+{-| Joins two predicates with an or operator
+-}
+or : Decoder Bool -> Decoder Bool -> Decoder Bool
+or = Decode.map2 (||)
 
 -- MISC
 
