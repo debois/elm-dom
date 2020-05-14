@@ -60,7 +60,9 @@ logContainer logs =
 ancestorDecode : Decoder String
 ancestorDecode =
   ( DOM.target -- Select the event target
-    << findAncestor (hasClass "container") -- Find the closest ancestor, with the class container
+    -- Find the closest ancestor, with the class container
+    -- You may use multiple predicates as well: (and (hasClass "container") (isTag "DIV"))
+    << findAncestor (hasClass "container")
     <| elemToString
   )
     |> Decode.map (Maybe.withDefault "Ancestor not found")
@@ -134,9 +136,38 @@ portResultToString : Result Decode.Error String -> String
 portResultToString res =
   case res of
     Ok str ->
-      "Received tag name: " ++ str
+      "Received an element from the port: " ++ str
     Err error ->
       "Error: " ++ Decode.errorToString error
+
+-- boundingClientRect example
+
+rectToString : Rectangle -> String
+rectToString rect = String.join ", "
+  [ "top: " ++ String.fromFloat rect.top
+  , "left: " ++ String.fromFloat rect.left
+  , "width: " ++ String.fromFloat rect.width
+  , "height: " ++ String.fromFloat rect.height
+  ]
+
+boundingDecode : Decoder String
+boundingDecode =
+  ( DOM.target
+    <| boundingClientRect
+  )
+    |> Decode.map rectToString
+
+boundingExample : Html Msg
+boundingExample =
+  div [ class "example-block" ]
+    [ h2 []
+        [ text "boundingClientRect" ]
+    , div []
+      [ Html.map Log <|
+          button [ on "click" boundingDecode ]
+            [ text "Show boundingClientRect of this button" ]
+      ]
+    ]
 
 -- VIEW
 
@@ -146,6 +177,7 @@ view model =
     [ logContainer model
     , viewAncestorExample
     , countChildrenExample
+    , boundingExample
     ]
 
 -- PORTS
