@@ -24,6 +24,7 @@ module DOM
         , isTag
         , and
         , or
+        , textContent
         )
 
 {-| You read values off the DOM by constructing a JSON decoder.
@@ -63,6 +64,7 @@ for the precise semantics of these measurements. See also
 
 @docs tagName
 @docs className, classList
+@docs textContent
 
 -}
 
@@ -343,3 +345,8 @@ classList : Decoder (List String)
 classList =
     at [ "classList" ]
       ( Decode.dict Decode.string |> Decode.map Dict.values )
+
+{-| Get the text content of an element.
+-}
+textContent : Decoder String
+textContent = at [ "textContent" ] Decode.string
