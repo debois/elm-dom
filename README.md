@@ -1,7 +1,7 @@
 # DOM traversal for Elm event-handlers and ports
 
 Library for reading information off the DOM. Use this if you need to
-discover geometry information (width, position, ...) of rendered elements.
+discover information (width, position, className, ...) of rendered elements.
 
 Elm has two major hurdles to overcome when working with the DOM:
 
