@@ -1,3 +1,7 @@
+# Moved to [`K-Adam/elm-dom`](https://github.com/K-Adam/elm-dom)
+
+The future releases of this library will be published in the new fork.
+
 # DOM traversal for Elm event-handlers
 
 Library for reading information off the DOM. Use this if you need to
