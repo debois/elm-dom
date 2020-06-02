@@ -1,23 +1,11 @@
-module DOM
-    exposing
-        ( Rectangle
-        , boundingClientRect
-        , childNode
-        , childNodes
-        , className
-        , currentTarget
-        , nextSibling
-        , offsetHeight
-        , offsetLeft
-        , offsetParent
-        , offsetTop
-        , offsetWidth
-        , parentElement
-        , previousSibling
-        , scrollLeft
-        , scrollTop
-        , target
-        )
+module DOM exposing
+    ( target, currentTarget, offsetParent, parentElement, nextSibling, previousSibling, childNode, childNodes
+    , offsetWidth, offsetHeight
+    , offsetLeft, offsetTop
+    , Rectangle, boundingClientRect
+    , scrollLeft, scrollTop
+    , className
+    )
 
 {-| You read values off the DOM by constructing a JSON decoder.
 See the `target` value for example use.
@@ -31,7 +19,9 @@ See the `target` value for example use.
 # Geometry
 
 Decoders for reading sizing etc. properties off the DOM. All decoders return
-measurements in pixels.
+measurements in pixels. Since Elm 0.19 there is a new way of getting access
+to an element's dimensions in the [Browser.DOM module](https://package.elm-lang.org/packages/elm/browser/latest/Browser-Dom#getElement) dimensions.
+So you might wanna check that out before using these decoders here.
 
 Refer to, e.g.,
 [the Mozilla documentation](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model/Determining_the_dimensions_of_elements)
@@ -44,6 +34,10 @@ for the precise semantics of these measurements. See also
 
 
 # Scroll
+
+Since Elm 0.19 there is a new way of getting access
+to an element's scroll position in the [Browser.DOM module](https://package.elm-lang.org/packages/elm/browser/latest/Browser-Dom#getElement) dimensions.
+So you might wanna check that out before using these decoders here.
 
 @docs scrollLeft, scrollTop
 
