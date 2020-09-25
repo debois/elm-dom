@@ -1,23 +1,11 @@
-module DOM
-    exposing
-        ( Rectangle
-        , boundingClientRect
-        , childNode
-        , childNodes
-        , className
-        , currentTarget
-        , nextSibling
-        , offsetHeight
-        , offsetLeft
-        , offsetParent
-        , offsetTop
-        , offsetWidth
-        , parentElement
-        , previousSibling
-        , scrollLeft
-        , scrollTop
-        , target
-        )
+module DOM exposing
+    ( target, currentTarget, offsetParent, parentElement, nextSibling, previousSibling, childNode, childNodes
+    , offsetWidth, offsetHeight
+    , offsetLeft, offsetTop
+    , Rectangle, boundingClientRect
+    , scrollLeft, scrollTop
+    , className
+    )
 
 {-| You read values off the DOM by constructing a JSON decoder.
 See the `target` value for example use.
@@ -115,7 +103,10 @@ previousSibling decoder =
 -}
 parentElement : Decoder a -> Decoder a
 parentElement decoder =
-    field "parentElement" decoder
+    Decode.oneOf
+        [ field "parentElement" decoder
+        , field "parentNode" decoder
+        ]
 
 
 {-| Find the ith child of an element.
